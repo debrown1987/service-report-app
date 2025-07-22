@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Service Report Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0; padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .logo {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    h1, h2 {
+      color: #004080;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    h2 {
+      border-bottom: 2px solid #004080;
+      padding-bottom: 6px;
+      margin-top: 35px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="time"],
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    textarea:focus {
+      border-color: #004080;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    button {
+      margin-top: 25px;
+      background-color: #004080;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #003060;
+    }
+
+    .row {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .signature-container {
+      margin-top: 20px;
+    }
+    canvas {
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      width: 100%;
+      max-height: 200px;
+      touch-action: none;
+    }
+    .clear-btn {
+      margin-top: 8px;
+      background-color: #d9534f;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .clear-btn:hover {
+      background-color: #c9302c;
+    }
+  </style>
+</head>
+<script>
+  function convertToMinutes(timeStr) {
+    if (!timeStr) return null;
+    const timeParts = timeStr.match(/(\d+):(\d+)(?:\s*(AM|PM))?/i);
+    if (!timeParts) return null;
+    let hours = parseInt(timeParts[1], 10);
+    const minutes = parseInt(timeParts[2], 10);
+    const meridian = timeParts[3];
+
+    if (meridian) {
+      if (meridian.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+      if (meridian.toUpperCase() === 'AM' && hours === 12) hours = 0;
+    }
+    return hours * 60 + minutes;
+  }
+
+  function calculateDuration() {
+    const startInput = document.getElementById('Start_Time');
+    const endInput = document.getElementById('End_Time');
+    const durationInput = document.getElementById('On_Site_Duration');
+
+    const start = convertToMinutes(startInput.value);
+    const end = convertToMinutes(endInput.value);
+
+    if (start === null || end === null) {
+      durationInput.value = '';
+      return;
+    }
+
+    let diff = end - start;
+    if (diff < 0) diff += 24 * 60;
+
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+
+    durationInput.value = `${hours}h ${minutes}m`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('Start_Time').addEventListener('change', calculateDuration);
+    document.getElementById('End_Time').addEventListener('change', calculateDuration);
+  });
+</script>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="static/logo.png" alt="Company Logo" class="logo" />
+      <h1>Service Report Form</h1>
+    </div>
+    <form method="POST" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
+
+      <label for="Service_Report_Number">Service Report Number</label>
+      <input type="text" id="Service_Report_Number" name="Service_Report_Number" required />
+
+      <label for="Date">Date</label>
+      <input type="date" id="Date" name="Date" required />
+
+      <h2>Customer Information</h2>
+
+      <label for="Company_Name">Company Name</label>
+      <input type="text" id="Company_Name" name="Company_Name" required />
+
+      <label for="Company_Address">Company Address</label>
+      <input type="text" id="Company_Address" name="Company_Address" required />
+
+      <label for="Company_Phone">Company Phone</label>
+      <input type="text" id="Company_Phone" name="Company_Phone" required />
+
+      <label for="Company_Email">Customer Email</label>
+      <input type="email" id="Company_Email" name="Company_Email" required />
+
+      <h2>Service Information</h2>
+
+      <label for="technician">Technician Name</label>
+      <input type="text" id="technician" name="technician" required />
+
+      <label for="technician_email">Technician Email</label>
+      <input type="email" id="technician_email" name="technician_email" required />
+
+      <label for="technician_phone">Technician Phone</label>
+      <input type="text" id="technician_phone" name="technician_phone" required />
+
+      <label for="Work_Order">Work Order</label>
+      <input type="text" id="Work_Order" name="Work_Order" required />
+
+      <label for="Reason_For_Service">Reason For Service</label>
+      <textarea id="Reason_For_Service" name="Reason_For_Service" required></textarea>
+
+      <div class="row">
+        <div class="column">
+          <label for="Customer_Asset_Number">Customer Asset Number</label>
+          <input type="text" id="Customer_Asset_Number" name="Customer_Asset_Number" required />
+        </div>
+        <div class="column">
+          <label for="Serial_Number">Serial Number</label>
+          <input type="text" id="Serial_Number" name="Serial_Number" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <label for="Incident">Incident</label>
+          <input type="text" id="Incident" name="Incident" required />
+        </div>
+        <div class="column">
+          <label for="Work_Order_Type">Work Order Type</label>
+          <input type="text" id="Work_Order_Type" name="Work_Order_Type" required />
+        </div>
+      </div>
+
+      <label for="Start_Time">Start Time</label>
+      <input type="time" id="Start_Time" name="Start_Time" required>
+
+      <label for="End_Time">End Time</label>
+      <input type="time" id="End_Time" name="End_Time" required>
+
+      <label for="On_Site_Duration">On Site Duration</label>
+      <input type="text" id="On_Site_Duration" name="On_Site_Duration" readonly>
+
+      <label for="Functional_Location_Address">Functional Location Address</label>
+      <input type="text" id="Functional_Location_Address" name="Functional_Location_Address" required />
+
+      <h2>Details</h2>
+
+      <label for="products">Products</label>
+      <textarea id="products" name="products" required></textarea>
+
+      <label for="service_tasks">Service Task Inspections</label>
+      <textarea id="service_tasks" name="service_tasks" required></textarea>
+
+      <label for="customer_notes">Customer Notes</label>
+      <textarea id="customer_notes" name="customer_notes"></textarea>
+
+      <label for="photos">Upload Photos</label>
+      <input type="file" id="photos" name="photos" accept="image/*" multiple />
+
+      <div class="signature-container">
+        <label for="signature-pad">Signature</label>
+        <canvas id="signature-pad"></canvas>
+        <input type="hidden" id="signature" name="signature" />
+        <button type="button" class="clear-btn" onclick="clearSignature()">Clear Signature</button>
+      </div>
+
+      <label for="Customer_Name">Customer Name</label>
+      <input type="text" id="Customer_Name" name="Customer_Name" required />
+
+      <button type="submit">Submit Report</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+  <script>
+    const canvas = document.getElementById("signature-pad");
+    const signaturePad = new SignaturePad(canvas);
+
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function clearSignature() {
+      signaturePad.clear();
+    }
+
+    function handleSubmit(event) {
+      if (signaturePad.isEmpty()) {
+        alert("Please provide a signature before submitting.");
+        event.preventDefault();
+        return false;
+      }
+      document.getElementById("signature").value = signaturePad.toDataURL();
+      return true;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

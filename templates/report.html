@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Service Report - {{ data.Company_Name }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0; padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    }
+
+    /* Added for logo + title */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    h1, h2 {
+      color: #004080;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    h2 {
+      border-bottom: 2px solid #004080;
+      padding-bottom: 6px;
+      margin-top: 35px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #bbb;
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #e6f0ff;
+      font-weight: 600;
+      width: 30%;
+    }
+    .signature, .photos img {
+      max-height: 160px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+    .photos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .photos img {
+      max-width: 160px;
+      object-fit: contain;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="static/logo.png" alt="Company Logo" class="logo" />
+      <h1>Service Report</h1>
+    </div>
+
+    <h2>Company Information</h2>
+    <p><strong>Name:</strong> {{ data.Company_Name }}</p>
+    <p><strong>Address:</strong> {{ data.Company_Address }}</p>
+    <p><strong>Phone:</strong> {{ data.Company_Phone }}</p>
+    <p><strong>Email:</strong> {{ data.Company_Email }}</p>
+
+    <h2>Service Details</h2>
+    <table>
+      <tr><th>Service Report Number</th><td>{{ data.Service_Report_Number }}</td></tr>
+      <tr><th>Date</th><td>{{ data.Date }}</td></tr>
+      <tr><th>Technician</th><td>{{ data.technician }}</td></tr>
+      <tr><th>Technician Email</th><td>{{ data.technician_email }}</td></tr>
+      <tr><th>Technician Phone</th><td>{{ data.technician_phone }}</td></tr>
+      <tr><th>Work Order</th><td>{{ data.Work_Order }}</td></tr>
+      <tr><th>Reason For Service</th><td>{{ data.Reason_For_Service }}</td></tr>
+      <tr><th>Customer Asset Number</th><td>{{ data.Customer_Asset_Number }}</td></tr>
+      <tr><th>Serial Number</th><td>{{ data.Serial_Number }}</td></tr>
+      <tr><th>Incident</th><td>{{ data.Incident }}</td></tr>
+      <tr><th>Work Order Type</th><td>{{ data.Work_Order_Type }}</td></tr>
+      <tr><th>Start Time</th><td>{{ data.Start_Time }}</td></tr>
+      <tr><th>End Time</th><td>{{ data.End_Time }}</td></tr>
+      <tr><th>On Site Duration</th><td>{{ data.On_Site_Duration }}</td></tr>
+      <tr><th>Functional Location Address</th><td>{{ data.Functional_Location_Address }}</td></tr>
+      <tr><th>Products</th><td>{{ data.products }}</td></tr>
+      <tr><th>Service Task Inspections</th><td>{{ data.service_tasks }}</td></tr>
+      <tr><th>Customer Notes</th><td>{{ data.customer_notes }}</td></tr>
+      <tr><th>Customer Name</th><td>{{ data.Customer_Name }}</td></tr>
+    </table>
+
+    {% if signature_path %}
+      <h2>Signature</h2>
+      <img src="{{ signature_path }}" alt="Signature" class="signature" />
+    {% endif %}
+
+    {% if photo_paths %}
+      <h2>Photos</h2>
+      <div class="photos">
+        {% for photo in photo_paths %}
+          <img src="{{ photo }}" alt="Photo {{ loop.index }}" />
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
+
+
+
+
+

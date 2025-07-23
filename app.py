@@ -8,9 +8,7 @@ import smtplib
 from email.message import EmailMessage
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-import pdfkit
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from weasyprint import HTML
 
 load_dotenv()
 
@@ -81,63 +79,43 @@ def save_report_to_db(data, sig_bytes, photo_bytes):
         ))
 
 def generate_pdf(data, sig_bytes, photo_bytes_list):
-    signature_path = None
+    # Convert signature to base64
+    signature_data = None
     if sig_bytes:
-        signature_path = os.path.join(UPLOAD_FOLDER, "signature.png")
-        with open(signature_path, "wb") as f:
-            f.write(sig_bytes)
+        signature_data = "data:image/png;base64," + base64.b64encode(sig_bytes).decode("utf-8")
 
-    photo_paths = []
-    for i, photo_bytes in enumerate(photo_bytes_list):
-        photo_path = os.path.join(UPLOAD_FOLDER, f"photo_{i}.png")
-        with open(photo_path, "wb") as f:
-            f.write(photo_bytes)
-        photo_paths.append(os.path.abspath(photo_path))
+    # Convert photos to base64
+    photo_data_list = [
+        "data:image/png;base64," + base64.b64encode(photo).decode("utf-8")
+        for photo in photo_bytes_list
+    ]
 
-    signature_url = os.path.abspath(signature_path) if signature_path else None
-
-
-    print("Signature path:", signature_url)
-    print("Photo paths:", photo_paths)
-
-    rendered_html = render_template("report.html", data=data, signature_path=signature_url, photo_paths=photo_paths)
+    rendered_html = render_template(
+        "report.html",
+        data=data,
+        signature_data=signature_data,
+        photo_data_list=photo_data_list
+    )
 
     filename = f"{data.get('Company_Name', 'report').replace(' ', '_')}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
     pdf_path = os.path.join(UPLOAD_FOLDER, filename)
 
-    wkhtml_path = os.getenv("WKHTMLTOPDF_PATH")
-    if wkhtml_path:
-        wkhtml_path = wkhtml_path.strip('"')  
-        config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
-    else:
-        config = None
-
-    options = {
-        'enable-local-file-access': None
-    }
-
-    pdfkit.from_string(rendered_html, pdf_path, options=options, configuration=config)
-    if signature_path and os.path.exists(signature_path):
-        os.remove(signature_path)
-    for path in photo_paths:
-        if os.path.exists(path):
-            os.remove(path)
+    HTML(string=rendered_html).write_pdf(pdf_path)
     return pdf_path
 
 def send_report_email(pdf_path, data):
-    sender_email = os.getenv("EMAIL_FROM")
+    sender_email = data.get("technician_email") or os.getenv("EMAIL_FROM")
     smtp_username = os.getenv("SMTP_USERNAME")
     smtp_password = os.getenv("SMTP_PASSWORD")
     use_tls = os.getenv("USE_TLS", "false").strip().lower() == "true"
     smtp_server = os.getenv("SMTP_SERVER")
     smtp_port = int(os.getenv("SMTP_PORT", 587))
-    
+
     recipients = list(filter(None, [
-        data.get('Company_Email'),        
-        data.get('technician_email'),     
-        os.getenv("EMAIL_TO")             
+        data.get('Company_Email'),
+        os.getenv("EMAIL_TO")
     ]))
-    
+
     if not recipients:
         print("No recipient emails found, skipping email sending.")
         return
@@ -165,7 +143,6 @@ def send_report_email(pdf_path, data):
         print(f"Email sent successfully to: {', '.join(recipients)}")
     except Exception as e:
         print(f"Email send error: {e}")
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -212,6 +189,9 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
 
 
 

@@ -19,7 +19,6 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.08);
     }
 
-    /* Added for logo + title */
     .header {
       display: flex;
       align-items: center;
@@ -60,10 +59,13 @@
     }
     .signature, .photos img {
       max-height: 160px;
+      max-width: 100%;
+      height: auto;
       border: 1px solid #bbb;
       border-radius: 4px;
       margin-top: 15px;
     }
+
     .photos {
       display: flex;
       flex-wrap: wrap;
@@ -113,22 +115,23 @@
       <tr><th>Customer Name</th><td>{{ data.Customer_Name }}</td></tr>
     </table>
 
-    {% if signature_path %}
+    {% if signature_data %}
       <h2>Signature</h2>
-      <img src="{{ signature_path }}" alt="Signature" class="signature" />
+      <img src="{{ signature_data }}" alt="Signature" class="signature" />
     {% endif %}
 
-    {% if photo_paths %}
+    {% if photo_data_list %}
       <h2>Photos</h2>
       <div class="photos">
-        {% for photo in photo_paths %}
-          <img src="{{ photo }}" alt="Photo {{ loop.index }}" />
+        {% for photo_data in photo_data_list %}
+          <img src="{{ photo_data }}" alt="Photo {{ loop.index }}" />
         {% endfor %}
       </div>
-    {% endif %}
+      {% endif %}
   </div>
 </body>
 </html>
+
 
 
 

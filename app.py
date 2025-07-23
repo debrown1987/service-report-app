@@ -79,12 +79,10 @@ def save_report_to_db(data, sig_bytes, photo_bytes):
         ))
 
 def generate_pdf(data, sig_bytes, photo_bytes_list):
-    # Convert signature to base64
     signature_data = None
     if sig_bytes:
         signature_data = "data:image/png;base64," + base64.b64encode(sig_bytes).decode("utf-8")
-
-    # Convert photos to base64
+        
     photo_data_list = [
         "data:image/png;base64," + base64.b64encode(photo).decode("utf-8")
         for photo in photo_bytes_list

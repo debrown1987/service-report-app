@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,83 +6,126 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0; padding: 20px;
       color: #333;
+      margin: 0;
+      padding: 0;
     }
     .container {
       max-width: 900px;
       margin: 0 auto;
-      background: white;
       padding: 25px 30px;
+      background: white;
       border-radius: 8px;
       box-shadow: 0 0 20px rgba(0,0,0,0.08);
     }
-
     .header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 25px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
     .logo {
       height: 60px;
       width: auto;
       object-fit: contain;
+      align-self:last baseline;
     }
-
     h1, h2 {
       color: #004080;
       font-weight: 700;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0;
     }
     h2 {
       border-bottom: 2px solid #004080;
       padding-bottom: 6px;
-      margin-top: 35px;
+      margin-top: 30px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      font-size: 14px;
       margin-top: 10px;
     }
     th, td {
+      padding: 5px 7px;
       border: 1px solid #bbb;
-      padding: 10px 14px;
-      text-align: left;
       vertical-align: top;
+      text-align: left;
     }
     th {
-      background-color: #e6f0ff;
+      background: #e6f0ff;
       font-weight: 600;
+      width: 20%;
+    }
+    td {
       width: 30%;
     }
     .signature, .photos img {
-      max-height: 160px;
       max-width: 100%;
-      height: auto;
+      max-height: 200px;
       border: 1px solid #bbb;
       border-radius: 4px;
-      margin-top: 15px;
+      margin: 15px 0;
     }
-
     .photos {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 10px;
     }
     .photos img {
       max-width: 160px;
       object-fit: contain;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+    .signature-details {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 20px;
+    }
+    .signature-details p {
+      margin: 0;
+      font-size: 14px;
+    }
+    .signature-details strong {
+      display: inline-block;
+      min-width: 140px;
+      font-weight: 600;
+    }
+    @media print {
+      body {
+        background: none;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        margin: 0;
+        border-radius: 0;
+      }
+      .page-break-before {
+        page-break-before: always;
+      }
+      .page-break-after {
+        page-break-after: always;
+      }
+      .no-print {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <img src="static/logo.png" alt="Company Logo" class="logo" />
+      {% if logo_data %}
+        <img src="{{ logo_data }}" alt="Company Logo" class="logo" />
+      {% else %}
+        <p><em>Logo not available</em></p>
+      {% endif %}
       <h1>Service Report</h1>
     </div>
 
@@ -94,30 +137,28 @@
 
     <h2>Service Details</h2>
     <table>
-      <tr><th>Service Report Number</th><td>{{ data.Service_Report_Number }}</td></tr>
-      <tr><th>Date</th><td>{{ data.Date }}</td></tr>
-      <tr><th>Technician</th><td>{{ data.technician }}</td></tr>
-      <tr><th>Technician Email</th><td>{{ data.technician_email }}</td></tr>
-      <tr><th>Technician Phone</th><td>{{ data.technician_phone }}</td></tr>
-      <tr><th>Work Order</th><td>{{ data.Work_Order }}</td></tr>
-      <tr><th>Reason For Service</th><td>{{ data.Reason_For_Service }}</td></tr>
-      <tr><th>Customer Asset Number</th><td>{{ data.Customer_Asset_Number }}</td></tr>
-      <tr><th>Serial Number</th><td>{{ data.Serial_Number }}</td></tr>
-      <tr><th>Incident</th><td>{{ data.Incident }}</td></tr>
-      <tr><th>Work Order Type</th><td>{{ data.Work_Order_Type }}</td></tr>
-      <tr><th>Start Time</th><td>{{ data.Start_Time }}</td></tr>
-      <tr><th>End Time</th><td>{{ data.End_Time }}</td></tr>
-      <tr><th>On Site Duration</th><td>{{ data.On_Site_Duration }}</td></tr>
-      <tr><th>Functional Location Address</th><td>{{ data.Functional_Location_Address }}</td></tr>
-      <tr><th>Products</th><td>{{ data.products }}</td></tr>
-      <tr><th>Service Task Inspections</th><td>{{ data.service_tasks }}</td></tr>
-      <tr><th>Customer Notes</th><td>{{ data.customer_notes }}</td></tr>
-      <tr><th>Customer Name</th><td>{{ data.Customer_Name }}</td></tr>
+      <tr><th>Service Report Number</th><td>{{ data.Service_Report_Number }}</td><th>Date</th><td>{{ data.Date }}</td></tr>
+      <tr><th>Technician</th><td>{{ data.technician }}</td><th>Technician Email</th><td>{{ data.technician_email }}</td></tr>
+      <tr><th>Technician Phone</th><td>{{ data.technician_phone }}</td><th>Work Order</th><td>{{ data.Work_Order }}</td></tr>
+      <tr><th colspan="1">Reason For Service</th><td colspan="3">{{ data.Reason_For_Service }}</td></tr>
+      <tr><th>Customer Asset Number</th><td>{{ data.Customer_Asset_Number }}</td><th>Serial Number</th><td>{{ data.Serial_Number }}</td></tr>
+      <tr><th>Incident</th><td>{{ data.Incident }}</td><th>Work Order Type</th><td>{{ data.Work_Order_Type }}</td></tr>
+      <tr><th>Start Time</th><td>{{ data.Start_Time }}</td><th>End Time</th><td>{{ data.End_Time }}</td></tr>
+      <tr><th>On Site Duration</th><td>{{ data.On_Site_Duration }}</td><th>Functional Location Address</th><td>{{ data.Functional_Location_Address }}</td></tr>
+      <tr><th colspan="1">Products</th><td colspan="3">{{ data.products }}</td></tr>
+      <tr><th colspan="1">Service Task Inspections</th><td colspan="3">{{ data.service_tasks }}</td></tr>
+      <tr><th colspan="1">Customer Notes</th><td colspan="3">{{ data.customer_notes }}</td></tr>
     </table>
+
+    <div class="page-break-before"></div>
 
     {% if signature_data %}
       <h2>Signature</h2>
       <img src="{{ signature_data }}" alt="Signature" class="signature" />
+      <div class="signature-details">
+        <p><strong>Customer Name:</strong> {{ data.Customer_Name }}</p>
+        <p><strong>Date:</strong> {{ data.Date }}</p>
+      </div>
     {% endif %}
 
     {% if photo_data_list %}
@@ -127,7 +168,9 @@
           <img src="{{ photo_data }}" alt="Photo {{ loop.index }}" />
         {% endfor %}
       </div>
-      {% endif %}
+      <div class="page-break-after"></div>
+    {% endif %}
+
   </div>
 </body>
 </html>

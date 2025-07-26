@@ -79,10 +79,17 @@ def save_report_to_db(data, sig_bytes, photo_bytes):
         ))
 
 def generate_pdf(data, sig_bytes, photo_bytes_list):
+    logo_path = os.path.join(app.root_path, 'static', 'logo.png')
+    logo_data = None
+    if os.path.exists(logo_path):
+        with open(logo_path, 'rb') as f:
+            logo_base64 = base64.b64encode(f.read()).decode('utf-8')
+            logo_data = f"data:image/png;base64,{logo_base64}"
+
     signature_data = None
     if sig_bytes:
         signature_data = "data:image/png;base64," + base64.b64encode(sig_bytes).decode("utf-8")
-        
+
     photo_data_list = [
         "data:image/png;base64," + base64.b64encode(photo).decode("utf-8")
         for photo in photo_bytes_list
@@ -92,7 +99,8 @@ def generate_pdf(data, sig_bytes, photo_bytes_list):
         "report.html",
         data=data,
         signature_data=signature_data,
-        photo_data_list=photo_data_list
+        photo_data_list=photo_data_list,
+        logo_data=logo_data
     )
 
     filename = f"{data.get('Company_Name', 'report').replace(' ', '_')}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"

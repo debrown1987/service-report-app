@@ -123,14 +123,14 @@ def send_report_email(pdf_path, data):
     ]))
 
     if not recipients:
-        print("No recipient emails found, skipping email sending.")
+        print("No recipient emails found, please enter a different email.")
         return
 
     msg = EmailMessage()
     msg['Subject'] = f"Service Report - {data.get('Company_Name', '')}"
     msg['From'] = sender_email
     msg['To'] = ", ".join(recipients)
-    msg.set_content("Attached is your service report.\n\nBest regards,\nIPG Photonics")
+    msg.set_content("Attached is your service report.\n\nBest regards,\n The IPG Photonics team.")
 
     with open(pdf_path, 'rb') as f:
         msg.add_attachment(f.read(), maintype='application', subtype='pdf', filename=os.path.basename(pdf_path))

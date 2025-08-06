@@ -109,7 +109,46 @@ def generate_pdf(data, sig_bytes, photo_bytes_list):
     HTML(string=rendered_html).write_pdf(pdf_path)
     return pdf_path
 
+def send_report_email(pdf_path, data):
+    sender_email = data.get("technician_email") or os.getenv("EMAIL_FROM")
+    smtp_username = os.getenv("SMTP_USERNAME")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    use_tls = os.getenv("USE_TLS", "false").strip().lower() == "true"
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = int(os.getenv("SMTP_PORT", 587))
 
+    recipients = list(filter(None, [
+        data.get('Company_Email'),
+        os.getenv("EMAIL_TO")
+    ]))
+
+    if not recipients:
+        print("No recipient emails found, please enter a different email.")
+        return
+
+    msg = EmailMessage()
+    msg['Subject'] = f"Service Report - {data.get('Company_Name', '')}"
+    msg['From'] = sender_email
+    msg['To'] = ", ".join(recipients)
+    msg.set_content("Attached is your service report.\n\nBest regards,\n The IPG Photonics team.")
+
+    with open(pdf_path, 'rb') as f:
+        msg.add_attachment(f.read(), maintype='application', subtype='pdf', filename=os.path.basename(pdf_path))
+
+    try:
+        if use_tls:
+            with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+                smtp.ehlo()
+                smtp.starttls()
+                smtp.login(smtp_username, smtp_password)
+                smtp.send_message(msg)
+        else:
+            with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+                smtp.login(smtp_username, smtp_password)
+                smtp.send_message(msg)
+        print(f"Email sent successfully to: {', '.join(recipients)}")
+    except Exception as e:
+        print(f"Email send error: {e}")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
